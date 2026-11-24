@@ -1,0 +1,206 @@
+{
+  "schema_version": "0.1",
+  "purpose": "Generic LH2 component palette",
+  "instance_policy": "Every default is an invented teaching input",
+  "templates": [
+    {
+      "template_id": "lh2-horizontal-storage-tank",
+      "component_model": "homogeneous_tank",
+      "nominal_capacity": {
+        "quantity": "illustrative_scale",
+        "value": 1.0,
+        "unit": "dimensionless"
+      },
+      "base_parameters": {
+        "volume_m3": 1.832595714594046,
+        "wall_heat_capacity_J_K": 200000.0,
+        "ambient_UA_W_K": 0.5,
+        "fluid_wall_UA_W_K": 30.0,
+        "inner_diameter_m": 1.0,
+        "straight_length_m": 2.0,
+        "head_depth_m": 0.25
+      },
+      "parameter_source": "Invented public teaching parameters; no facility or manufacturer source",
+      "ports": [
+        {
+          "port_id": "LIQUID-IN",
+          "medium": "liquid_hydrogen",
+          "direction": "inlet",
+          "role": "top_or_bottom_fill"
+        },
+        {
+          "port_id": "LIQUID-OUT",
+          "medium": "liquid_hydrogen",
+          "direction": "outlet",
+          "role": "liquid_withdrawal"
+        },
+        {
+          "port_id": "VAPOR-IN",
+          "medium": "hydrogen_vapor",
+          "direction": "inlet",
+          "role": "vapor_return"
+        },
+        {
+          "port_id": "VAPOR-OUT",
+          "medium": "hydrogen_vapor",
+          "direction": "outlet",
+          "role": "bog_or_vent"
+        }
+      ],
+      "scale_exponents": {
+        "volume_m3": 1.0,
+        "wall_heat_capacity_J_K": 0.6666666666666666,
+        "ambient_UA_W_K": 0.6666666666666666,
+        "fluid_wall_UA_W_K": 0.6666666666666666,
+        "inner_diameter_m": 0.3333333333333333,
+        "straight_length_m": 0.3333333333333333,
+        "head_depth_m": 0.3333333333333333
+      },
+      "scale_basis": "geometric similarity: volume ratio r, lengths r^(1/3), surface-controlled thermal terms r^(2/3); pressure class unchanged",
+      "display_name": "수평 LH2 저장조",
+      "category": "Storage"
+    },
+    {
+      "template_id": "ambient-hydrogen-vaporizer",
+      "component_model": "vaporizer",
+      "nominal_capacity": {
+        "quantity": "illustrative_scale",
+        "value": 1.0,
+        "unit": "dimensionless"
+      },
+      "base_parameters": {
+        "UA_W_K": 50.0,
+        "maximum_heat_W": 5000.0
+      },
+      "parameter_source": "Invented public teaching parameters; no facility or manufacturer source",
+      "ports": [
+        {
+          "port_id": "IN",
+          "medium": "hydrogen",
+          "direction": "inlet",
+          "role": "cryogenic_hydrogen_inlet"
+        },
+        {
+          "port_id": "OUT",
+          "medium": "hydrogen_vapor",
+          "direction": "outlet",
+          "role": "warmed_hydrogen_outlet"
+        }
+      ],
+      "scale_exponents": {
+        "UA_W_K": 1.0,
+        "maximum_heat_W": 1.0
+      },
+      "scale_basis": "parallel heat-transfer area and rated duty scale linearly with capacity",
+      "display_name": "대기식 기화기",
+      "category": "Heat Exchangers"
+    },
+    {
+      "template_id": "cryogenic-isolation-valve",
+      "component_model": "valve",
+      "nominal_capacity": {
+        "quantity": "illustrative_scale",
+        "value": 1.0,
+        "unit": "dimensionless"
+      },
+      "base_parameters": {
+        "full_open_area_m2": 5e-05,
+        "discharge_coefficient": 0.8
+      },
+      "parameter_source": "Invented public teaching parameters; no facility or manufacturer source",
+      "ports": [
+        {
+          "port_id": "IN",
+          "medium": "hydrogen",
+          "direction": "inlet",
+          "role": "upstream"
+        },
+        {
+          "port_id": "OUT",
+          "medium": "hydrogen",
+          "direction": "outlet",
+          "role": "downstream"
+        }
+      ],
+      "scale_exponents": {
+        "full_open_area_m2": 1.0
+      },
+      "scale_basis": "flow area scales linearly with declared capacity; discharge coefficient remains a dimensionless model input",
+      "display_name": "극저온 차단밸브",
+      "category": "Valves"
+    },
+    {
+      "template_id": "lh2-operating-point-pump",
+      "component_model": "pump",
+      "display_name": "LH2 지정점 펌프",
+      "category": "Pressure Changers",
+      "nominal_capacity": {
+        "quantity": "illustrative_scale",
+        "value": 1.0,
+        "unit": "dimensionless"
+      },
+      "base_parameters": {
+        "pressure_rise_Pa": 100000.0,
+        "isentropic_efficiency": 0.65
+      },
+      "parameter_source": "Invented public teaching parameters; no facility or manufacturer source",
+      "ports": [
+        {
+          "port_id": "IN",
+          "medium": "liquid_hydrogen",
+          "direction": "inlet",
+          "role": "process_inlet"
+        },
+        {
+          "port_id": "OUT",
+          "medium": "liquid_hydrogen",
+          "direction": "outlet",
+          "role": "process_outlet"
+        }
+      ],
+      "scale_exponents": {
+        "pressure_rise_Pa": 0.0
+      },
+      "scale_basis": "explicit physical parameters; only declared exponents scale with capacity"
+    },
+    {
+      "template_id": "single-phase-hydrogen-pipe",
+      "component_model": "pipe",
+      "display_name": "단상 수소배관",
+      "category": "Piping",
+      "nominal_capacity": {
+        "quantity": "illustrative_scale",
+        "value": 1.0,
+        "unit": "dimensionless"
+      },
+      "base_parameters": {
+        "length_m": 4.0,
+        "inner_diameter_m": 0.02,
+        "roughness_m": 1e-06,
+        "local_loss_coefficient": 1.0,
+        "heat_into_fluid_W": 0.0,
+        "elevation_change_m": 0.0
+      },
+      "parameter_source": "Invented public teaching parameters; no facility or manufacturer source",
+      "ports": [
+        {
+          "port_id": "IN",
+          "medium": "hydrogen",
+          "direction": "inlet",
+          "role": "process_inlet"
+        },
+        {
+          "port_id": "OUT",
+          "medium": "hydrogen",
+          "direction": "outlet",
+          "role": "process_outlet"
+        }
+      ],
+      "scale_exponents": {
+        "length_m": 1.0,
+        "heat_into_fluid_W": 1.0
+      },
+      "scale_basis": "explicit physical parameters; only declared exponents scale with capacity"
+    }
+  ]
+}

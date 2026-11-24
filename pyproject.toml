@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "lh2-process-simulator-models"
+version = "0.1.0"
+description = "Generic LH2 process authoring and synthetic tank simulations"
+requires-python = ">=3.10"
+dependencies = ["CoolProp>=7,<9", "numpy>=2,<3", "scipy>=1.14,<2"]
+[tool.setuptools.packages.find]
+where = ["src"]

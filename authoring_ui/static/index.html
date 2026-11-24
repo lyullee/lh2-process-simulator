@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>가상 LH2 공정 시뮬레이터</title>
+  <link rel="stylesheet" href="/styles.css?v=20261014-detail">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-mark">H₂</div>
+    <div class="brand-copy">
+      <strong>가상 LH2 공정 · 센서·공정 시뮬레이터</strong>
+      <span>가상 LH2 공정 · First-Principles Model Environment</span>
+    </div>
+    <div class="header-status"><span class="status-dot"></span><span id="serverStatus">물리모델 연결 확인 중</span></div>
+  </header>
+
+  <nav class="menu-tabs" aria-label="작업 영역">
+    <button class="menu-tab file-tab" data-menu="file">File</button>
+    <button class="menu-tab active" data-menu="home">Home</button>
+    <button class="menu-tab" data-menu="flowsheet">Flowsheet</button>
+    <button class="menu-tab" data-menu="properties">Properties</button>
+    <button class="menu-tab" data-menu="simulation">Simulation</button>
+    <button class="menu-tab" data-menu="results">Results</button>
+  </nav>
+
+  <nav class="toolbar" aria-label="편집 도구">
+    <div class="ribbon-group"><small>PROJECT</small><div><button id="newBtn" title="가상 공정 기본 배치로 되돌리기">↺ New</button><button id="saveBtn">▣ Save</button><button id="downloadBtn">⇩ Export</button><label class="file-button">⇧ Import<input id="uploadInput" type="file" accept="application/json"></label></div></div>
+    <span class="divider"></span>
+    <div class="ribbon-group"><small>FLOWSHEET</small><div><button id="connectBtn">⤳ Connect</button><button id="deleteBtn">⌫ Delete</button><button id="duplicateBtn">⧉ Duplicate</button></div></div>
+    <span class="divider"></span>
+    <div class="ribbon-group"><small>VIEW</small><div><button id="zoomOutBtn">−</button><button id="fitBtn">Fit</button><button id="zoomInBtn">＋</button><button id="view3dBtn" aria-pressed="false">◇ 3D Icons</button><button id="unitsBtn">단위 설정</button></div></div>
+    <span class="toolbar-spacer"></span>
+    <div class="ribbon-group run-group"><small>RUN CONTROL</small><div><select id="scenarioSelect" aria-label="운전 시나리오"></select><button id="runBtn" class="primary">▶ Run</button><button id="pauseRunBtn" disabled>Ⅱ 일시정지</button><button id="resumeRunBtn" disabled>▶ 계속 실행</button><button id="resetRunBtn">↺ 계산 초기화</button><button id="previewBtn" title="공통 운전조건과 탱크 미리보기 설정">⚙ Conditions</button></div></div>
+  </nav>
+
+  <main class="workspace">
+    <aside class="palette-panel">
+      <div class="panel-heading">
+        <div><span class="eyebrow">MODEL PALETTE</span><h2>Unit Operations</h2></div>
+        <span id="libraryCount" class="count-pill">0</span>
+      </div>
+      <div class="palette-search"><input id="paletteSearch" placeholder="Search model / unit operation"></div>
+      <div id="palette" class="palette"></div>
+      <div class="palette-note">
+        <strong>Model Library</strong>
+        <span id="librarySummary">모델 정보를 불러오는 중입니다.</span>
+      </div>
+    </aside>
+
+    <div id="paletteResizer" class="pane-resizer" role="separator" aria-label="모델 팔레트 폭 조절" aria-orientation="vertical" tabindex="0" title="드래그하여 폭 조절 · 더블클릭하여 초기화"></div>
+
+    <section class="canvas-shell">
+      <div class="canvas-bar">
+        <div>
+          <strong id="designTitle">Flowsheet: 가상 LH2 공정 LH2 공급설비</strong>
+          <span id="designMeta">3 nodes · 2 connections</span>
+        </div>
+        <div class="legend">
+          <span><i class="line-swatch liquid"></i>LH2</span>
+          <span><i class="line-swatch vapor"></i>GH2/BOG</span>
+          <span><i class="line-swatch vent"></i>VENT</span>
+          <span><i class="line-swatch active"></i>활성 경로</span>
+        </div>
+      </div>
+      <div id="canvasViewport" class="canvas-viewport">
+        <svg id="processCanvas" viewBox="0 0 1181 705" role="application" aria-label="공정 모델 편집 캔버스">
+          <defs>
+            <pattern id="gridSmall" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#dfe8ef" stroke-width="0.7"/>
+            </pattern>
+            <pattern id="gridLarge" width="100" height="100" patternUnits="userSpaceOnUse">
+              <rect width="100" height="100" fill="url(#gridSmall)"/>
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#c7d5df" stroke-width="1"/>
+            </pattern>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#143248" flood-opacity=".18"/>
+            </filter>
+            <filter id="shadow3d" x="-30%" y="-30%" width="170%" height="180%">
+              <feDropShadow dx="5" dy="7" stdDeviation="4" flood-color="#102d42" flood-opacity=".30"/>
+            </filter>
+            <linearGradient id="equipment3d" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffffff"/><stop offset=".42" stop-color="#d8edf6"/><stop offset="1" stop-color="#78a9c3"/>
+            </linearGradient>
+            <linearGradient id="tank3d" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fafdff"/><stop offset=".35" stop-color="#a9d5e6"/><stop offset=".65" stop-color="#e8f6fb"/><stop offset="1" stop-color="#6599b4"/>
+            </linearGradient>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"/>
+            </marker>
+          </defs>
+          <rect width="1440" height="860" fill="url(#gridLarge)"/>
+          <g id="zoneLayer"></g>
+          <g id="edgeLayer"></g>
+          <g id="nodeLayer"></g>
+          <g id="overlayLayer"></g>
+        </svg>
+        <div id="modeHint" class="mode-hint hidden"></div>
+        <div id="toast" class="toast hidden"></div>
+      </div>
+      <div class="canvas-footer">
+        <span id="cursorStatus">선택 없음</span>
+        <span id="zoomStatus">100%</span>
+      </div>
+    </section>
+
+    <div id="inspectorResizer" class="pane-resizer" role="separator" aria-label="입력 및 결과 패널 폭 조절" aria-orientation="vertical" tabindex="0" title="드래그하여 폭 조절 · 더블클릭하여 초기화"></div>
+
+    <aside class="inspector-panel">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="properties">Input</button>
+        <button class="tab" data-tab="results">Results</button>
+        <button class="tab" data-tab="audit">Diagnostics</button>
+      </div>
+      <div id="propertiesTab" class="tab-content active">
+        <div id="emptyInspector" class="empty-state">
+          <div class="empty-icon">⌁</div>
+          <strong>Data Browser</strong>
+          <span>유닛 또는 스트림을 선택하면 입력, 물성 파라미터와 연결 상태가 표시됩니다.</span>
+        </div>
+        <form id="propertyForm" class="property-form hidden"></form>
+      </div>
+      <div id="resultsTab" class="tab-content">
+        <div class="result-header">
+          <div><span class="eyebrow">DYNAMIC SOLVER</span><h2 id="resultTitle">실행 전</h2></div>
+          <span id="solverBadge" class="badge neutral">대기</span>
+        </div>
+        <div class="monitor-controls"><label>공정 대상<select id="monitorTarget"></select></label><label>조회 변수<select id="monitorVariable"></select></label></div>
+        <div class="monitor-toolbar"><button id="expandChartBtn">↗ 그래프 크게 보기</button><button id="wideMonitorBtn">패널 확대</button><button id="pinMonitorBtn">＋ 감시 목록</button><button id="exportMonitorBtn">CSV 내보내기</button></div>
+        <div id="monitorCoverage" class="monitor-coverage"></div>
+        <p id="monitorHelp" class="parameter-help">Run 후 유닛 또는 라인을 선택하세요. 라인은 유동 상류의 압력·온도와 부호 있는 유량, 유닛은 연결 유량 절댓값의 합을 표시합니다.</p>
+        <div id="basicTrendCharts" class="basic-trends"></div>
+        <div class="trend-heading"><strong>선택 변수 상세 추세</strong><span id="monitorSampleCount"></span></div>
+        <svg id="resultChart" aria-label="선택 변수 상세 추세 그래프"></svg>
+        <div id="resultMetrics" class="metric-grid"></div>
+        <div id="variableBrowser" class="variable-browser"></div>
+        <div class="trend-heading"><strong>감시 목록</strong></div><div id="monitorWatchlist"></div>
+        <pre id="resultDetails" class="result-details">시나리오를 실행하면 압력·질량·유량 궤적과 보존 잔차가 표시됩니다.</pre>
+      </div>
+      <div id="auditTab" class="tab-content">
+        <div class="audit-summary">
+          <div class="audit-score"><span id="auditReady">—</span><small>계산 가능 부품</small></div>
+          <div class="audit-score"><span id="auditEdges">—</span><small>연결</small></div>
+        </div>
+        <button id="validateBtn" class="full-button">설계 다시 검증</button>
+        <div id="auditMessages" class="audit-messages"></div>
+        <div class="policy-card">
+          <strong>모델 정책</strong>
+          <span>가상 공정 시계열 피팅 없음</span>
+          <span>screening 물리 파라미터</span>
+          <span>가상 공정 자산 자동 승격 차단</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <dialog id="simulationDialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-heading"><div><span class="eyebrow">PROCESS CONDITIONS</span><h2>공통 운전조건</h2></div><button value="cancel" class="icon-btn" formnovalidate>×</button></div>
+      <p>공통 계산시간과 외기 조건을 설정합니다. 탱크의 초기압력·충전율·벽체온도는 각 유닛을 선택해 입력한 값이 우선 적용됩니다.</p>
+      <label>계산 시간 (s)<input id="durationInput" type="number" value="1" min="0.000001" max="86400" step="any" required></label>
+      <label>시간 간격 (s)<input id="stepInput" type="number" value="0.1" min="0.000001" max="86400" step="any" required></label>
+      <label>외기 온도 (K)<input id="ambientInput" type="number" value="300" min="0.000001" step="any" required></label>
+      <p class="parameter-help">최대 10,000 계산 단계입니다. 초기압력·충전율은 각 유닛의 Input에서 설정합니다. 긴 계산에는 먼저 짧은 시간간격으로 수치 안정성을 확인하세요.</p>
+      <div id="processConditionsSummary" class="dialog-summary"></div>
+      <div class="dialog-actions"><button value="cancel" formnovalidate>취소</button><button id="applyConditionsBtn" value="default">조건 적용</button><button id="runPreviewConfirm" value="default" class="primary">탱크 미리보기 실행</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="projectDialog">
+    <form method="dialog" class="dialog-card compact-dialog">
+      <div class="dialog-heading"><div><span class="eyebrow">PROJECT</span><h2>설계 파일</h2></div><button value="cancel" class="icon-btn">×</button></div>
+      <p>현재 설계를 서버에 저장하거나 JSON으로 내보내고, 다시 불러올 수 있습니다.</p>
+      <div class="project-action-grid">
+        <button id="fileNewBtn" value="cancel">↺ 새 설계</button>
+        <button id="fileSaveBtn" value="cancel">▣ 서버 저장</button>
+        <button id="fileExportBtn" value="cancel">⇩ JSON 내보내기</button>
+        <button id="fileImportBtn" value="cancel">⇧ JSON 불러오기</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="chartDialog" class="chart-dialog">
+    <div class="chart-dialog-heading"><div><span class="eyebrow">PROCESS TRENDS</span><h2 id="expandedChartTitle">공정 변수 추세</h2></div><button id="closeChartBtn" type="button" aria-label="그래프 창 닫기">×</button></div>
+    <div class="chart-range-controls"><label>변수<select id="expandedVariable"></select></label><label>시작 시간 (s)<input id="chartFromInput" type="number" step="any"></label><label>종료 시간 (s)<input id="chartToInput" type="number" step="any"></label><button id="applyChartRangeBtn">시간범위 적용</button><button id="fitChartRangeBtn">전체 범위</button></div>
+    <p id="expandedChartHelp"></p><svg id="expandedChart" aria-label="확대된 공정 변수 추세"></svg><div id="expandedChartStats" class="expanded-chart-stats"></div>
+    <div class="trend-heading"><strong>시간별 원계산값</strong><button id="expandedExportBtn">CSV 내보내기</button></div><div id="expandedDataTable" class="expanded-data-table"></div>
+  </dialog>
+  <dialog id="unitsDialog" class="units-dialog">
+    <div class="dialog-heading"><div><span class="eyebrow">GLOBAL UNIT SYSTEM</span><h2>전체 단위 설정</h2></div></div>
+    <p>입력창·현재값·그래프·표·CSV의 단위를 함께 변경합니다. 모델 계산 및 설계 JSON의 수치는 SI로 유지합니다.</p>
+    <label>단위 프리셋<select id="unitPresetSelect"><option value="">사용자 설정</option><option value="SI">SI</option><option value="engineering">공정용 (bar · °C · kg/h)</option><option value="US">미국식 (psi · °F · lb/h)</option></select></label>
+    <div id="unitFields" class="unit-fields"></div>
+    <label>압력 기준<select id="pressureBasisInput"><option value="absolute">절대압 (a)</option><option value="gauge">게이지압 (g)</option></select></label>
+    <label>게이지압 기준 대기압 (Pa, 절대압)<input id="referencePressureInput" type="number" step="any" min="0.000001" value="101325"></label>
+    <p>차압은 대기압을 빼지 않고 환산합니다. 온도 변화량은 °C/°F의 영점 이동 없이 환산합니다. 체적유량은 해당 상태의 실제 체적유량이며 표준상태 유량이 아닙니다.</p>
+    <div class="dialog-actions"><button id="cancelUnitsBtn" type="button">취소</button><button id="applyUnitsBtn" type="button" class="primary">전체 적용</button></div>
+  </dialog>
+  <script src="/units.js?v=20261014-units" defer></script>
+  <script src="/parameter_labels.js?v=20261014-units" defer></script>
+  <script src="/monitor.js?v=20261014-units" defer></script>
+  <script src="/app.js?v=20261014-units" defer></script>
+</body>
+</html>
